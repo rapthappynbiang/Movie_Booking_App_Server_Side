@@ -10,7 +10,7 @@ const routeResponseMap ={
     "/GET/artist": "All Artists Data in JSON format from Mongo DB",
 }
 
-
+//create server
 const app = http.createServer((request, response)=>{
     response.writeHead(200,{ 
         "content-type": "text/html"
@@ -26,6 +26,24 @@ const app = http.createServer((request, response)=>{
     }
 
 }); 
+
+
+//create a mongoose object and conncted to it
+const db = require("./models");
+db.mongoose
+  .connect(db.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log("Connected to the database!");
+    
+  })
+  .catch(err => {
+    console.log("Cannot connect to the database!", err);
+    process.exit();
+  });
+
 
 app.listen(port);
 console.log("Server has Started");
