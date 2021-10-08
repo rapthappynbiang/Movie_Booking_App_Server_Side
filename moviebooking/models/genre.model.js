@@ -1,12 +1,13 @@
 module.exports = mongoose => {
-    const Genres = mongoose.model(
+
+    const Genre = mongoose.model(
         "genres",
         mongoose.Schema({
             genreid: {type: Number},
             genre: {type: String}
         })
     )
-    return Genres;
+    return Genre;
 }
 
 //structure of genres schema

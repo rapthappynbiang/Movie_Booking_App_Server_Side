@@ -80,7 +80,7 @@ class Home extends Component {
             }
         });
 
-        xhr.open("GET", this.props.baseUrl + "movies?status=PUBLISHED");
+        xhr.open("GET", this.props.baseUrl + "GET/movies?status=PUBLISHED");
         xhr.setRequestHeader("Cache-Control", "no-cache");
         xhr.send(data);
 
@@ -95,11 +95,11 @@ class Home extends Component {
             }
         });
 
-        xhrReleased.open("GET", this.props.baseUrl + "movies?status=RELEASED");
+        xhrReleased.open("GET", this.props.baseUrl + "GET/movies?status=RELEASED");
         xhrReleased.setRequestHeader("Cache-Control", "no-cache");
         xhrReleased.send(dataReleased);
 
-        // Get filters
+        // Get genres
         let dataGenres = null;
         let xhrGenres = new XMLHttpRequest();
         xhrGenres.addEventListener("readystatechange", function () {
@@ -110,7 +110,7 @@ class Home extends Component {
             }
         });
 
-        xhrGenres.open("GET", this.props.baseUrl + "genres");
+        xhrGenres.open("GET", this.props.baseUrl + "GET/genres");
         xhrGenres.setRequestHeader("Cache-Control", "no-cache");
         xhrGenres.send(dataGenres);
 
@@ -125,7 +125,7 @@ class Home extends Component {
             }
         });
 
-        xhrArtists.open("GET", this.props.baseUrl + "artists");
+        xhrArtists.open("GET", this.props.baseUrl + "GET/artists");
         xhrArtists.setRequestHeader("Cache-Control", "no-cache");
         xhrArtists.send(dataArtists);
     }
@@ -184,7 +184,7 @@ class Home extends Component {
             }
         });
 
-        xhrFilter.open("GET", this.props.baseUrl + "movies" + encodeURI(queryString));
+        xhrFilter.open("GET", this.props.baseUrl + "GET/movies" + encodeURI(queryString));
         xhrFilter.setRequestHeader("Cache-Control", "no-cache");
         xhrFilter.send(dataFilter);
     }
@@ -201,7 +201,7 @@ class Home extends Component {
 
                 <GridList cols={5} className={classes.gridListUpcomingMovies} >
                     {this.state.upcomingMovies.map(movie => (
-                        <GridListTile key={"upcoming" + movie._id}>
+                        <GridListTile key={"upcoming" + movie.id}>
                             <img src={movie.poster_url} className="movie-poster" alt={movie.title} />
                             <GridListTileBar title={movie.title} />
                         </GridListTile>

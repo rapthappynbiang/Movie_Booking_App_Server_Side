@@ -1,32 +1,30 @@
-//default port
-const port = 9000;
-const http  = require("http");
-const httpStatus = require("http-status-codes");
+const express = require('express');
+const cors = require('cors');
+bodyParser = require('body-parser');
+//make express object
+const app = express(); 
 
-//definning routes map
-const routeResponseMap ={
-    "/GET/movies": "All Movies Data in JSON format from Mongo DB",
-    "/GET/genre": "All Genres Data in JSON format from Mongo DB",
-    "/GET/artist": "All Artists Data in JSON format from Mongo DB",
-}
+//use corsOptions
+var corsOptions = {
+  origin: "https://localhost:3000"
+};
 
-//create server
-const app = http.createServer((request, response)=>{
-    response.writeHead(200,{ 
-        "content-type": "text/html"
-    });
-    //Handling routes
-    console.log(request.url);
-    if(routeResponseMap[request.url]){
-        //return the movies data
-        response.write(routeResponseMap[request.url]);
-       response.end();
-    }else{
-        response.end("<h1>Not Found</h1>");
-    }
+app.use(cors(corsOptions));
 
-}); 
+// parse requests of content-type - application/json
+// using bodyParser
+app.use(bodyParser.json());
 
+// parse requests of content-type - application/x-www-form-urlencoded
+// using bodyParser
+app.use(bodyParser.urlencoded({ extended: false }));
+
+//Handle incoming Request
+app.get("/", (req, res) => {
+  console.log(req.url);
+  res.json({ message: "Welcome to Upgrad Movie booking application development." });
+  res.end();
+});
 
 //create a mongoose object and conncted to it
 const db = require("./models");
@@ -44,6 +42,16 @@ db.mongoose
     process.exit();
   });
 
+  //Handling all movies requests
+ require("./routes/movie.routes")(app);
 
-app.listen(port);
-console.log("Server has Started");
+ //Handling all genres requests
+ require("./routes/genre.routes")(app);
+
+ //Handling all artists requests
+ require("./routes/artist.routes")(app);
+
+const PORT = 3000;
+app.listen(PORT, ()=>{
+  console.log("Server is listening at port 3000");
+});
