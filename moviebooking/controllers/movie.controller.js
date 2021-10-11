@@ -22,7 +22,7 @@ exports.findAllMovies = (req, res)=>{
             published_data: req.query.end_date
         })
         .then(response=>{
-            res.setHeader('Content-Type': 'application/json');
+            res.setHeader('Content-Type', 'application/json');
             res.status(200)
             .send(response)
             .end();

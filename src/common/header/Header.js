@@ -99,13 +99,13 @@ class Header extends Component {
         let xhrLogin = new XMLHttpRequest();
         let that = this;
         xhrLogin.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                sessionStorage.setItem("uuid", JSON.parse(this.responseText).id);
+            if (this.readyState === 4 && this.status === 200) {
+                sessionStorage.setItem("uuid", JSON.parse(this.responseText).uuid);
                 //sessionStorage.setItem("access-token", xhrLogin.getResponseHeader("access-token"));
 
                 if(xhrLogin.getResponseHeader("access-token") == null)
                 {
-                    sessionStorage.setItem("access-token", JSON.parse(this.responseText)["access-token"]);
+                    sessionStorage.setItem("access-token", JSON.parse(this.responseText)["accesstoken"]);
                 }
                 
             
@@ -136,6 +136,7 @@ class Header extends Component {
     registerClickHandler = () => {
         this.state.firstname === "" ? this.setState({ firstnameRequired: "dispBlock" }) : this.setState({ firstnameRequired: "dispNone" });
         this.state.lastname === "" ? this.setState({ lastnameRequired: "dispBlock" }) : this.setState({ lastnameRequired: "dispNone" });
+        this.state.username === "" ? this.setState({ usernameRequired: "dispBlock" }) : this.setState({ usernameRequired: "dispNone" });
         this.state.email === "" ? this.setState({ emailRequired: "dispBlock" }) : this.setState({ emailRequired: "dispNone" });
         this.state.registerPassword === "" ? this.setState({ registerPasswordRequired: "dispBlock" }) : this.setState({ registerPasswordRequired: "dispNone" });
         this.state.contact === "" ? this.setState({ contactRequired: "dispBlock" }) : this.setState({ contactRequired: "dispNone" });
@@ -144,6 +145,7 @@ class Header extends Component {
             "email_address": this.state.email,
             "first_name": this.state.firstname,
             "last_name": this.state.lastname,
+            "username": this.state.username,
             "mobile_number": this.state.contact,
             "password": this.state.registerPassword
         });
@@ -151,7 +153,7 @@ class Header extends Component {
         let xhrSignup = new XMLHttpRequest();
         let that = this;
         xhrSignup.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
+            if (this.readyState === 4 && this.status ===200) {
                 that.setState({
                     registrationSuccess: true
                 });
@@ -172,6 +174,10 @@ class Header extends Component {
         this.setState({ lastname: e.target.value });
     }
 
+    inputUserNameeChangeHandler = (e)=>{
+        this.setState({ username: e.target.value });
+    }
+
     inputEmailChangeHandler = (e) => {
         this.setState({ email: e.target.value });
     }
@@ -188,14 +194,14 @@ class Header extends Component {
 
         //Mofification By Mahesh Panhale
 
-        let dataSignout = JSON.stringify({
+        let dataSignout = {
             "uuid": sessionStorage.getItem("uuid")
-        });
+        };
 
         let xhrSignout = new XMLHttpRequest();
         let that = this;
         xhrSignout.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
+            if (this.readyState === 4 && this.status === 200) {
                 if(JSON.parse(this.responseText).message == "Logged Out successfully.")
                 {
                     sessionStorage.removeItem("uuid");
@@ -312,6 +318,14 @@ class Header extends Component {
                                 <InputLabel htmlFor="lastname">Last Name</InputLabel>
                                 <Input id="lastname" type="text" lastname={this.state.lastname} onChange={this.inputLastNameChangeHandler} />
                                 <FormHelperText className={this.state.lastnameRequired}>
+                                    <span className="red">required</span>
+                                </FormHelperText>
+                            </FormControl>
+                            <br /><br />
+                            <FormControl required>
+                                <InputLabel htmlFor="username">Username</InputLabel>
+                                <Input id="username" type="text" username={this.state.username} onChange={this.inputUserNameChangeHandler} />
+                                <FormHelperText className={this.state.userNameRequired}>
                                     <span className="red">required</span>
                                 </FormHelperText>
                             </FormControl>

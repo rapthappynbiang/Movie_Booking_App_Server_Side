@@ -6,7 +6,7 @@ const app = express();
 
 //use corsOptions
 var corsOptions = {
-  origin: "https://localhost:3000"
+  origin: "http://localhost:3000"
 };
 
 app.use(cors(corsOptions));
@@ -50,6 +50,9 @@ db.mongoose
 
  //Handling all artists requests
  require("./routes/artist.routes")(app);
+
+ //Handling user request
+ require("./routes/user.routes")(app);
 
 const PORT = 3000;
 app.listen(PORT, ()=>{

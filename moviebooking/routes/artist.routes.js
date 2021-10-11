@@ -1,11 +1,12 @@
 module.exports = app =>{
 
-    console.log("I am inside artists router");
+    //import express router
     const router = require('express').Router();
+    //import artists.controller
     const artists = require('../controllers/artist.controller');
 
     //GET/artists
-     router.get("/GET/artists", artists.findAllArtists);
+     router.get("/artists", artists.findAllArtists);
 
-     app.use('/app/api', router);
+     app.use('/api', router);
 }
