@@ -50,16 +50,17 @@ class Confirmation extends Component {
 
   confirmBookingHandler = () => {
     console.log(this.props.location.bookingSummary.showId);
-    let data = JSON.stringify({
+    let data = {
       "customerUuid": sessionStorage.getItem('uuid'),
       "bookingRequest": {
         "coupon_code": this.state.couponCode,
         "show_id": this.props.location.bookingSummary.showId,
         "tickets": [
-          this.props.location.bookingSummary.tickets.toString()
+          /**generate any random number for ticket between 1 and  100 */
+          Math.ceil(Math.random()*1000)+1
         ]
       }
-    });
+    }
 
     let that = this;
     let xhr = new XMLHttpRequest();

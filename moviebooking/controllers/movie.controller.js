@@ -24,7 +24,7 @@ exports.findAllMovies = (req, res)=>{
         .then(response=>{
             res.setHeader('Content-Type', 'application/json');
             res.status(200)
-            .send(response)
+            .send([response])
             .end();
         }).catch(err=>{
             res.setHeader('Content-Type', 'application/json');
@@ -99,7 +99,7 @@ exports.findOne = (req, res)=>{
         //set header content type and send the data to client
         res.setHeader('Content-Type', 'application/json');
        res.status(200)
-       .send(response)
+       .send([response])
        .end();
     })
     .catch((err)=>{

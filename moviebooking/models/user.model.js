@@ -11,9 +11,9 @@ module.exports = mongoose => {
             password:{type: String, required: true},
             role:{type: String, default: "user"}, 
             isLoggedIn: Boolean, 
-            uuid: {type: String, default: ""}, 
+            uuid: {type: String, default: "", unique: true}, 
             accesstoken: {type: String, default: ""},
-            coupens:[
+            coupons:[
                {
                   id:{type: Number}, discountValue: {type: Number} 
                }

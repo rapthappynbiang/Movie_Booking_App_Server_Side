@@ -47,7 +47,7 @@ class BookShow extends Component {
                 let newLocations = [];
 
                 for (let show of response.shows) {
-                    newLocations.push({ id: show.theatre.city, location: show.theatre.city });
+                    newLocations.push({ id: show.id, location: show.theatre.city});
                 }
 
                 newLocations = newLocations.filter((loc, index, self) =>
