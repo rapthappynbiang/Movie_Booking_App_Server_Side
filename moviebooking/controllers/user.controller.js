@@ -65,10 +65,9 @@ exports.signUp=(req, res)=>{
 
 //login api
 exports.login = (req, res) => {
-    //decode the username and password from header store in Authorization key
-    console.log(req.get("Authorization"));
+
+    /*decode the username and password from header store in Authorization key*/
     var authorisation = req.get("Authorization").split(" ")[1];
-    console.log(authorisation);
     var username = atob(authorisation).split(":")[0];
     var password = atob(authorisation).split(":")[1];
 
@@ -87,11 +86,12 @@ exports.login = (req, res) => {
         {
             new: true
         })
-    .then(response=>{
+    .then((response)=>{
         //if user with username and password does not exist send a message to signup
         if(response == null){
             res.setHeader('Content-Type', 'application/json');
             res.status(404).json({message: "User not found Please Signup"}).end();
+            return;
         }
         //define the data object with required data to be send
         var data = {
@@ -101,27 +101,40 @@ exports.login = (req, res) => {
         }
         //else send the data
         res.setHeader('Content-Type', 'application/json'); 
-        res.status(200).send(data).end();
-    })
-    .catch(err=>{
-        //if err occurs
-        console.log(err);
-        res.setHeader('Content-Type', 'application/json');
-        res.status(500).json({message: "Internal server Error"}).end(); 
+        res.status(200).json(data).end()
     });
 }
 
 //logout api
 exports.logout = (req, res) => {
-        console.log(typeof req.body);
-        var uuid = req.body["uuid"];
-        console.log(uuid);
+       //check type of req body
+       var uuid ="";
+       if(typeof req.body !== 'object'){
+            uuid = JSON.parse(req.body).uuid;
+       }else{
+           uuid = req.body.uuid;
+       }
+
+       console.log(uuid);
+
         User.findOneAndUpdate({uuid: uuid}, {uuid: "", accesstoken: "", isLoggedIn: false}, {new: true})
-        .then(response=>{
+        .then((response)=>{
+            //Set Header content-type
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json({"message": "successfully loggout"}).end();
+             console.log(response);
+            if(response == null){
+                res.status(404).json({"message": "Some Error occurs"}).end();
+                return;
+            }
+
+            //send the data isLoggin false.
+            res.status(200).json({message: "Logged Out successfully."}).end();
+        },
+        (err)=>{
+            console.log(err)
         }) 
         .catch(err=>{
+            console.log(err);
             res.setHeader('Content-Type', 'application/json');
             res.status(500).json({"message": "Internal Server Error"}).end();
         })
@@ -139,6 +152,13 @@ exports.getCouponCode = (req, res)=>{
        //if user is there find the coupons with the provided code provided in req query inside coupon of user
        var code = req.query.code;
 
+       if(response == null){
+           //if code not found send status 404
+          res.setHeader('Content-Type', 'application/json');
+          res.status(404).send({"message": "Code not found"}).end();
+          return;
+       }
+
        //store coupons array of a user in coupons
        var coupons = response.coupons;
        
@@ -152,17 +172,13 @@ exports.getCouponCode = (req, res)=>{
        },
        (err)=>{
            console.log(err);
-       });
-       //if code not found send status 404
-       res.setHeader('Content-Type', 'application/json');
-       res.status(404).send({"message": "Code not found"}).end();
-          
+       })            
    },
    (err)=>{
        console.log(err);
    })
    .catch(err=>{
-       console.log(err);
+    console.log(err);
     res.setHeader('Content-Type', 'application/json');
     res.status(500).send({message: "Server Error"})
    })

@@ -59,7 +59,7 @@ class Details extends Component {
             }
         });
 
-        xhrMovie.open("GET", this.props.baseUrl + "movies/" + this.props.match.params.id);
+        xhrMovie.open("GET", this.props.baseUrl + "/movies/" + this.props.match.params.id);
         xhrMovie.setRequestHeader("Cache-Control", "no-cache");
         xhrMovie.send(dataMovie);
     }

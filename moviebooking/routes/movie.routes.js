@@ -6,6 +6,12 @@ module.exports = app =>{
     //import express router
     var router = require('express').Router();
 
+    //GET /movies?status=PUBLISHED
+    router.get("/movies?status=PUBLISHED", movie.findAllMovies)
+
+    //GET /movies?status=RELEASEDs
+    router.get("/movies?status=RELEASED", movie.findAllMovies)
+
     //Defining routes for finding all movies
     router.get("/movies", movie.findAllMovies);
 

@@ -19,7 +19,8 @@ class BookShow extends Component {
             theatre: "",
             language: "",
             showDate: "",
-            tickets: 0,
+            tickets: [0],
+            bookSeats: "",
             unitPrice: 500,
             availableTickets: 20,
             reqLocation: "dispNone",
@@ -43,7 +44,7 @@ class BookShow extends Component {
             if (xhrShows.readyState === 4) {
                 debugger;
                 let response = JSON.parse(xhrShows.responseText)[0];
-                this.setState({ originalShows: response.shows });
+                this.setState({ originalShows: response.shows, availableTickets: response.shows[0].available_seats});
                 let newLocations = [];
 
                 for (let show of response.shows) {
@@ -60,7 +61,7 @@ class BookShow extends Component {
             }
         }).bind(this));
 
-        xhrShows.open("GET", this.props.baseUrl + "movies/" + this.props.match.params.id);
+        xhrShows.open("GET", this.props.baseUrl + "/movies/" + this.props.match.params.id);
         xhrShows.setRequestHeader("Cache-Control", "no-cache");
         xhrShows.send(dataShows);
     }
@@ -143,7 +144,23 @@ class BookShow extends Component {
     }).bind(this);
 
     ticketsChangeHandler = ((event) => {
-        this.setState({ tickets: event.target.value.split(",") });
+        var inputValueString = event.target.value;
+        var value= event.target.value.replace(" ", "");
+        var newArray = [];
+        if(value.length===1){
+            newArray =[Number(value)];
+        }else{
+           var tempArray = value.split(",")
+           for(let i=0;i<tempArray.length;i++){
+               if(tempArray[i] !== ""){
+                   newArray.push(Number(tempArray[i]));
+               }
+           }
+        }
+    
+        this.setState({ tickets: newArray, bookSeats: inputValueString});
+        console.log(newArray);
+        
     }).bind(this);
 
     bookShowButtonHandler = (() => {
@@ -164,7 +181,7 @@ class BookShow extends Component {
     render() {
         return (
             <div>
-                <Header />
+                <Header baseUrl={this.props.baseUrl}/>
                 <div className="bookShow">
                     <Typography className="back" >
                         <Link to={"/movie/" + this.props.match.params.id}>&#60; Back to Movie Details</Link>
@@ -246,7 +263,7 @@ class BookShow extends Component {
                             <br /><br />
                             <FormControl required className="formControl">
                                 <InputLabel htmlFor="tickets">Seat Selection: ( {this.state.availableTickets} available )</InputLabel>
-                                <Input id="tickets" value={this.state.tickets !== 0 ? this.state.tickets : ""} onChange={this.ticketsChangeHandler} />
+                                <Input id="tickets" value={this.state.bookSeats} onChange={this.ticketsChangeHandler} />
                                 <FormHelperText className={this.state.reqTickets}>
                                     <span className="red">Required</span>
                                 </FormHelperText>
@@ -257,7 +274,13 @@ class BookShow extends Component {
                             </Typography>
                             <br />
                             <Typography>
-                                Total Price: Rs. {this.state.unitPrice * this.state.tickets.length}
+                                Total Price: Rs. {(()=>{
+                                       if(this.state.tickets.length===1 && this.state.tickets[0]===0){
+                                           return 0;
+                                       }else{
+                                           return this.state.unitPrice * this.state.tickets.length;
+                                       }
+                                })()}
                             </Typography>
                             <br /><br />
                             <Button variant="contained" onClick={this.bookShowButtonHandler} color="primary">

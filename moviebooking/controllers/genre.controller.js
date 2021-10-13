@@ -7,7 +7,7 @@ exports.findAllGenres = (req, res)=>{
     .then(response=>{
        res.setHeader('Content-Type', 'application/json');
        res.status(200)
-       .send(response)
+       .json({genres: response})
        .end();
     })
     .catch(err=>{

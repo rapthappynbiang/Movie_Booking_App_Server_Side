@@ -72,15 +72,15 @@ class Home extends Component {
         let that = this;
         xhr.addEventListener("readystatechange", function () {
           
-            if (this.readyState === 4) {
-                debugger;
+            if (this.readyState === 4 ) {
+                console.log(JSON.parse(this.responseText.toString()));
                 that.setState({
                     upcomingMovies: JSON.parse(this.responseText).movies
                 });
             }
         });
 
-        xhr.open("GET", this.props.baseUrl + "GET/movies?status=PUBLISHED");
+        xhr.open("GET", this.props.baseUrl + "/movies?status=PUBLISHED");
         xhr.setRequestHeader("Cache-Control", "no-cache");
         xhr.send(data);
 
@@ -95,7 +95,7 @@ class Home extends Component {
             }
         });
 
-        xhrReleased.open("GET", this.props.baseUrl + "GET/movies?status=RELEASED");
+        xhrReleased.open("GET", this.props.baseUrl + "/movies?status=RELEASED");
         xhrReleased.setRequestHeader("Cache-Control", "no-cache");
         xhrReleased.send(dataReleased);
 
@@ -110,7 +110,7 @@ class Home extends Component {
             }
         });
 
-        xhrGenres.open("GET", this.props.baseUrl + "GET/genres");
+        xhrGenres.open("GET", this.props.baseUrl + "/genres");
         xhrGenres.setRequestHeader("Cache-Control", "no-cache");
         xhrGenres.send(dataGenres);
 
@@ -125,7 +125,7 @@ class Home extends Component {
             }
         });
 
-        xhrArtists.open("GET", this.props.baseUrl + "GET/artists");
+        xhrArtists.open("GET", this.props.baseUrl + "/artists");
         xhrArtists.setRequestHeader("Cache-Control", "no-cache");
         xhrArtists.send(dataArtists);
     }
@@ -177,14 +177,14 @@ class Home extends Component {
         let dataFilter = null;
         let xhrFilter = new XMLHttpRequest();
         xhrFilter.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
+            if (this.readyState === 4 && this.status === 200) {
                 that.setState({
                     releasedMovies: JSON.parse(this.responseText).movies
                 });
             }
         });
 
-        xhrFilter.open("GET", this.props.baseUrl + "GET/movies" + encodeURI(queryString));
+        xhrFilter.open("GET", this.props.baseUrl + "/movies" + encodeURI(queryString));
         xhrFilter.setRequestHeader("Cache-Control", "no-cache");
         xhrFilter.send(dataFilter);
     }

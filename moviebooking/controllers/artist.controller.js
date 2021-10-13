@@ -7,7 +7,7 @@ exports.findAllArtists = (req, res)=>{
     .then(response=>{
         res.setHeader('Content-Type', 'application/json');
         res.status(200)
-        .send(response)
+        .send({artists: response})
         .end();
      })
      .catch(err=>{

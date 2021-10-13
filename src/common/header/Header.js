@@ -117,7 +117,7 @@ class Header extends Component {
             }
         });
 
-        xhrLogin.open("POST", this.props.baseUrl + "auth/login");
+        xhrLogin.open("POST", this.props.baseUrl + "/auth/login");
         xhrLogin.setRequestHeader("Authorization", "Basic " + window.btoa(this.state.username + ":" + this.state.loginPassword));
         xhrLogin.setRequestHeader("Content-Type", "application/json");
         xhrLogin.setRequestHeader("Cache-Control", "no-cache");
@@ -194,9 +194,9 @@ class Header extends Component {
 
         //Mofification By Mahesh Panhale
 
-        let dataSignout = {
-            "uuid": sessionStorage.getItem("uuid")
-        };
+        let dataSignout = JSON.stringify({
+            "uuid": sessionStorage.getItem("uuid"),
+        });
 
         let xhrSignout = new XMLHttpRequest();
         let that = this;
@@ -214,7 +214,8 @@ class Header extends Component {
             }
         });
 
-        xhrSignout.open("POST", this.props.baseUrl + "auth/logout");
+        console.log(this.props.baseUrl)
+        xhrSignout.open("POST", this.props.baseUrl + "/auth/logout");
         xhrSignout.setRequestHeader("Content-Type", "application/json");
         xhrSignout.setRequestHeader("Cache-Control", "no-cache");
         xhrSignout.send(dataSignout);

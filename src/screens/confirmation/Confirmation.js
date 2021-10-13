@@ -50,17 +50,14 @@ class Confirmation extends Component {
 
   confirmBookingHandler = () => {
     console.log(this.props.location.bookingSummary.showId);
-    let data = {
+    let data = JSON.stringify({
       "customerUuid": sessionStorage.getItem('uuid'),
       "bookingRequest": {
         "coupon_code": this.state.couponCode,
         "show_id": this.props.location.bookingSummary.showId,
-        "tickets": [
-          /**generate any random number for ticket between 1 and  100 */
-          Math.ceil(Math.random()*1000)+1
-        ]
+        "tickets": this.props.location.bookingSummary.tickets
       }
-    }
+    })
 
     let that = this;
     let xhr = new XMLHttpRequest();
@@ -72,7 +69,7 @@ class Confirmation extends Component {
       }
     });
 
-    xhr.open("POST", this.props.baseUrl + "auth/bookings");
+    xhr.open("POST", this.props.baseUrl + "/auth/bookings");
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem('access-token'));
     xhr.setRequestHeader("Cache-Control", "no-cache");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -115,7 +112,7 @@ class Confirmation extends Component {
       }
     });
 
-    xhr.open("GET", this.props.baseUrl + "auth/coupons?code=" + this.state.couponCode);
+    xhr.open("GET", this.props.baseUrl + "/auth/coupons?code=" + this.state.couponCode);
     xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem('access-token'));
     xhr.setRequestHeader("Cache-Control", "no-cache");
     xhr.setRequestHeader("Content-Type", "application/json");

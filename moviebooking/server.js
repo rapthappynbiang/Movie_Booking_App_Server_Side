@@ -54,7 +54,7 @@ db.mongoose
  //Handling user request
  require("./routes/user.routes")(app);
 
-const PORT = 3000;
+const PORT = 8085;
 app.listen(PORT, ()=>{
-  console.log("Server is listening at port 3000");
+  console.log("Server is listening at port ", PORT);
 });
