@@ -124,7 +124,7 @@ class Confirmation extends Component {
 
     return (
       <div className="Details">
-        <Header />
+        <Header baseUrl={this.props.baseUrl} />
 
         <div className="confirmation marginTop16">
           <div>

@@ -6,6 +6,7 @@ const tokGen = new TokenGenerator();
 //have used v4 instead of uuidv4 since it is deprecated
 const { v4 } = require('uuid');
 const { atob } = require('b2a');
+const bcrypt = require('bcrypt');
 
 //signup() api
 exports.signUp=(req, res)=>{
@@ -17,31 +18,39 @@ exports.signUp=(req, res)=>{
 
           //get the number of users present in db
            User.countDocuments({}, (err, count)=>{
-            var data = req.body;
-             count += 1;
-            User.insertMany([{
-                userid: `${count}`,
-                email: data.email_address,
-                first_name: data.first_name,
-                last_name: data.last_name,
-                username: data.username,
-                contact: data.mobile_number,
-                password: data.passwords
-            }])
-            .then(response=>{
-                res.setHeader('Content-type', 'application/json');
-                res.status(200)
-                .send({message: "sucessfully Sign up"})
-                .end();
-            })
-            .catch(err=>{
-                console.log(err);
-                res.setHeader('Content-Type', 'application/json');
-                res.status(400)
-                .json({message: "Bad Request" })
-                .end();
+               if(err){
+                   console.log(err)
+                   return;
+               }
+               var data = req.body;
+                //Hash the password before storing to db
+                  bcrypt.hash(data.password, 10).then(hashPassword=>{
+                      data.password = hashPassword;
+                      count += 1;
+                        User.insertMany([{
+                            userid: `${count}`,
+                            email: data.email_address,
+                            first_name: data.first_name,
+                            last_name: data.last_name,
+                            username: data.username,
+                            contact: data.mobile_number,
+                            password: data.password
+                        }])
+                        .then(response=>{
+                            res.setHeader('Content-type', 'application/json');
+                            res.status(200)
+                            .send({message: "sucessfully Sign up"})
+                            .end();
+                        })
+                        .catch(err=>{
+                            console.log(err);
+                            res.setHeader('Content-Type', 'application/json');
+                            res.status(400)
+                            .json({message: "Bad Request" })
+                            .end();
+                        });
+                  });
             });
-           });
 
        }else{
           //if data already exists  
@@ -63,49 +72,57 @@ exports.signUp=(req, res)=>{
 }
 
 
-//login api
+//login api /auth/login
 exports.login = (req, res) => {
 
     /*decode the username and password from header store in Authorization key*/
     var authorisation = req.get("Authorization").split(" ")[1];
     var username = atob(authorisation).split(":")[0];
     var password = atob(authorisation).split(":")[1];
-
-    //Find the user with username and password with decoded username and password
-    //if found update the accesstoken and isLoggedIn value
-    //and set new option as true to return the object after update
-    User.findOneAndUpdate({
-            username: username, 
-            password: password
-        }, 
-        {
-            uuid: v4(), 
-            accesstoken: tokGen.generate(), 
-            isLoggedIn: true
-        },
-        {
-            new: true
-        })
-    .then((response)=>{
-        //if user with username and password does not exist send a message to signup
+    //get user by username and compare hash password
+    User.findOne({username: username})
+    .then(response=>{
         if(response == null){
-            res.setHeader('Content-Type', 'application/json');
-            res.status(404).json({message: "User not found Please Signup"}).end();
+            res.setHeader('Content-Type','application/json');
+            res.status(404).json({message: "user not found please signup!"}).end();
             return;
         }
-        //define the data object with required data to be send
-        var data = {
-            uuid: response.uuid,
-            accesstoken: response.accesstoken,
-            isLoggedIn: response.isLoggedIn
-        }
-        //else send the data
-        res.setHeader('Content-Type', 'application/json'); 
-        res.status(200).json(data).end()
-    });
+        //store password in a variable
+        var loginPassword = response.password;
+        //compare response.password with password using bcrypt.compare
+        bcrypt.compare(password, response.password).then((result)=>{
+            
+                  //result is true i.e password is correct
+                  if(result){
+                      //Password is correct
+                      User.findOneAndUpdate({username: username, password: loginPassword},
+                        {uuid: v4(), accesstoken: tokGen.generate(), isLoggedIn: true},
+                        {new: true})
+                        .then(responseObj=>{
+                            var data ={
+                               uuid: responseObj.uuid,
+                               accesstoken: responseObj.accesstoken,
+                               message: "Loggedin Successful!"
+                            }
+
+                            //send data to front end
+                            res.setHeader('Content-Type', 'application/json');
+                            res.status(200).json(data).end();
+                        })
+                  } else{
+                      //if password is incorrect
+                    console.log("Result is false");
+                    res.status(400).json({message: "Invalid password"}).end();
+                  }
+
+        }).catch(err=>{
+            console.log(err);
+            res.status(500).json({message: "error try again!"})
+        })
+    })   
 }
 
-//logout api
+//logout api /auth/logout
 exports.logout = (req, res) => {
        //check type of req body
        var uuid ="";
@@ -123,7 +140,7 @@ exports.logout = (req, res) => {
             res.setHeader('Content-Type', 'application/json');
              console.log(response);
             if(response == null){
-                res.status(404).json({"message": "Some Error occurs"}).end();
+                res.status(400).json({"message": "Some Error occurs"}).end();
                 return;
             }
 

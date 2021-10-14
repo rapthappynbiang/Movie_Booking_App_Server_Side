@@ -58,7 +58,8 @@ class Header extends Component {
             contactRequired: "dispNone",
             contact: "",
             registrationSuccess: false,
-            loggedIn: sessionStorage.getItem("access-token") == null ? false : true
+            loggedIn: sessionStorage.getItem("access-token") == null ? false : true,
+            loginStatus: ""
         }
     }
 
@@ -79,7 +80,8 @@ class Header extends Component {
             registerPasswordRequired: "dispNone",
             registerPassword: "",
             contactRequired: "dispNone",
-            contact: ""
+            contact: "",
+            loginStatus: ""
         });
     }
 
@@ -99,8 +101,9 @@ class Header extends Component {
         let xhrLogin = new XMLHttpRequest();
         let that = this;
         xhrLogin.addEventListener("readystatechange", function () {
-            if (this.readyState === 4 && this.status === 200) {
-                sessionStorage.setItem("uuid", JSON.parse(this.responseText).uuid);
+            if (this.readyState === 4 ) {
+                if(this.status ===200){
+                    sessionStorage.setItem("uuid", JSON.parse(this.responseText).uuid);
                 //sessionStorage.setItem("access-token", xhrLogin.getResponseHeader("access-token"));
 
                 if(xhrLogin.getResponseHeader("access-token") == null)
@@ -110,10 +113,18 @@ class Header extends Component {
                 
             
                 that.setState({
-                    loggedIn: true
+                    loggedIn: true, 
+                    loginStatus: JSON.parse(this.responseText).message
                 });
 
                 that.closeModalHandler();
+                }else{
+                    that.setState({
+                        loginStatus: JSON.parse(this.responseText).message,
+                        username: "",
+                        loginPassword: ""
+                    });
+                }
             }
         });
 
@@ -127,10 +138,20 @@ class Header extends Component {
 
     inputUsernameChangeHandler = (e) => {
         this.setState({ username: e.target.value });
+        if(e.target.value===""){
+            this.setState({usernameRequired: "dispBlock"})
+        }else{
+            this.setState({usernameRequired: "dispNone"});
+        }
     }
 
     inputLoginPasswordChangeHandler = (e) => {
         this.setState({ loginPassword: e.target.value });
+        if(e.target.value===""){
+            this.setState({loginPasswordRequired: "dispBlock"})
+        }else{
+            this.setState({loginPasswordRequired: "dispNone"});
+        }
     }
 
     registerClickHandler = () => {
@@ -160,7 +181,7 @@ class Header extends Component {
             }
         });
 
-        xhrSignup.open("POST", this.props.baseUrl + "auth/signup");
+        xhrSignup.open("POST", this.props.baseUrl + "/auth/signup");
         xhrSignup.setRequestHeader("Content-Type", "application/json");
         xhrSignup.setRequestHeader("Cache-Control", "no-cache");
         xhrSignup.send(dataSignup);
@@ -168,26 +189,57 @@ class Header extends Component {
 
     inputFirstNameChangeHandler = (e) => {
         this.setState({ firstname: e.target.value });
+        if(e.target.value===""){
+            this.setState({firstnameRequired: "dispBlock"})
+        }else{
+            this.setState({firstnameRequired: "dispNone"});
+        }
+        
     }
 
     inputLastNameChangeHandler = (e) => {
         this.setState({ lastname: e.target.value });
+        if(e.target.value===""){
+            this.setState({lastnameRequired: "dispBlock"})
+        }else{
+            this.setState({lastnameRequired: "dispNone"});
+        }
     }
 
-    inputUserNameeChangeHandler = (e)=>{
+    inputUserNameChangeHandler = (e)=>{
         this.setState({ username: e.target.value });
+        if(e.target.value===""){
+            this.setState({userNameRequired: "dispBlock"})
+        }else{
+            this.setState({userNameRequired: "dispNone"});
+        }
     }
 
     inputEmailChangeHandler = (e) => {
         this.setState({ email: e.target.value });
+        if(e.target.value===""){
+            this.setState({userNameRequired: "dispBlock"})
+        }else{
+            this.setState({userNameRequired: "dispNone"});
+        }
     }
 
     inputRegisterPasswordChangeHandler = (e) => {
         this.setState({ registerPassword: e.target.value });
+        if(e.target.value===""){
+            this.setState({loginPasswordRequired: "dispBlock"})
+        }else{
+            this.setState({loginPasswordRequired: "dispNone"});
+        }
     }
 
     inputContactChangeHandler = (e) => {
         this.setState({ contact: e.target.value });
+        if(e.target.value===""){
+            this.setState({contactRequired: "dispBlock"})
+        }else{
+            this.setState({contactRequired: "dispNone"});
+        }
     }
 
     logoutHandler = (e) => {
@@ -293,13 +345,11 @@ class Header extends Component {
                                 </FormHelperText>
                             </FormControl>
                             <br /><br />
-                            {this.state.loggedIn === true &&
                                 <FormControl>
-                                    <span className="successText">
-                                        Login Successful!
+                                    <span className={this.state.loggedIn===true?"successText":"red"}>
+                                        {this.state.loginStatus}
                                     </span>
                                 </FormControl>
-                            }
                             <br /><br />
                             <Button variant="contained" color="primary" onClick={this.loginClickHandler}>LOGIN</Button>
                         </TabContainer>
@@ -326,7 +376,7 @@ class Header extends Component {
                             <FormControl required>
                                 <InputLabel htmlFor="username">Username</InputLabel>
                                 <Input id="username" type="text" username={this.state.username} onChange={this.inputUserNameChangeHandler} />
-                                <FormHelperText className={this.state.userNameRequired}>
+                                <FormHelperText className={this.state.usernameRequired}>
                                     <span className="red">required</span>
                                 </FormHelperText>
                             </FormControl>

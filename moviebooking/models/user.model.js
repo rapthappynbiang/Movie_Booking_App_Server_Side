@@ -6,11 +6,11 @@ module.exports = mongoose => {
             email:{type: String, required: true, unique: true}, 
             first_name: {type: String, required: true}, 
             last_name: {type: String, required: true}, 
-            username:{type: String, required: true},
+            username:{type: String, required: true, unique: true},
             contact:{type: Number}, 
             password:{type: String, required: true},
             role:{type: String, default: "user"}, 
-            isLoggedIn: Boolean, 
+            isLoggedIn: {type: Boolean, default: false}, 
             uuid: {type: String, default: "", unique: true}, 
             accesstoken: {type: String, default: ""},
             coupons:[
@@ -31,7 +31,7 @@ module.exports = mongoose => {
 
     return User;
 }
-
+/**NOTE PLEASE HASH The Password If You would insert the day manually from mongodb cmd line*/
 //Structure for user schema
 // {
 //     "userid": 1,
@@ -40,7 +40,7 @@ module.exports = mongoose => {
 //     "last_name": "user1", 
 //     "username":"test",
 //     "contact":"9898989898", 
-//     "password":"test@123",
+//     "password":"$2b$10$yHRzc..z/QjtnWuA5WfZH.c27czRiuyMDaxwAL1/9pjLVIKLrwauW",
 //     "role":"user", 
 //     "isLoggedIn": false, 
 //     "uuid":"", 

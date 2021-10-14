@@ -37,7 +37,8 @@ class BookShow extends Component {
     }
     
     componentWillMount() {
-       
+        debugger;
+        let props = this.props;
         let dataShows = null;
         let xhrShows = new XMLHttpRequest();
         xhrShows.addEventListener("readystatechange", (function () {
